@@ -1,7 +1,11 @@
 from tkinter import *
+from tkinter import messagebox
+
 FONT = ("Calibre", 8, "bold")
 RED = "#7D0A0A"
 LIGHT_YELLOW = "#F3EDC8"
+
+
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
 
 
@@ -9,28 +13,41 @@ LIGHT_YELLOW = "#F3EDC8"
 def default_interface():
     """Clears all the entries and focus on website entry field"""
     website_entry.delete(0, END)
-    username_entry.delete(0, username_entry.get().find("@"))
+    # username_entry.delete(0, username_entry.get().find("@"))
     password_entry.delete(0, END)
     website_entry.focus()
 
 
 def save_information():
-    """Saves all the entries data into a local file"""
+    """Saves all the entries data into a local file, show warning if any field is left empty and show ok/cancel popup
+    for user to double-check the data before it is saved"""
     # Get the text from all entries
     website_text = website_entry.get()
     username_text = username_entry.get()
     password_text = password_entry.get()
-    # Append the data into a local file
-    with open("data.txt", "a") as data_file:
-        data_file.write(f"{website_text} | {username_text} | {password_text}\n")
-    default_interface()
+
+    if not bool(website_text) or not bool(username_text) or not bool(password_text):
+        messagebox.showwarning("Oops...", "Please don't leave any fields empty!")
+    else:
+        is_answer_ok = messagebox.askokcancel(title=website_text, message=f"These are the details entered: \n\n"
+                                                                          f"Email: {username_text}\n"
+                                                                          f"Password: {password_text} \n\n"
+                                                                          f"Is it ok to save?")
+
+        if is_answer_ok:
+            # Append the data into a local file
+            with open("data.txt", "a") as data_file:
+                data_file.write(f"{website_text} | {username_text} | {password_text}\n")
+            default_interface()
 
 
-# ---------------------------- UI SETUP ------------------------------- #
+# ---------------------------- UI SETUP ----------------------
+# --------- #
 # Window settings
 window = Tk()
 window.title("Password Manager")
 window.config(padx=50, pady=50, bg="white")
+window.iconbitmap("lock.ico")
 
 # Canvas with picture
 canvas = Canvas(width=200, height=200, highlightthickness=0, bg="white")
