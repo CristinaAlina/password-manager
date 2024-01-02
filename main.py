@@ -7,6 +7,24 @@ import json
 FONT = ("Calibre", 8, "bold")
 RED = "#7D0A0A"
 LIGHT_YELLOW = "#F3EDC8"
+OUTPUT_FILE = "data.json"
+
+
+# ------------------------- SEARCH EXISTENT WEBSITE ----------------------------- #
+def search_website_data():
+    """Searches already existing website into json file and return the username and password into a popup for user"""
+    website = website_entry.get()
+    try:
+        with open(OUTPUT_FILE) as file_data:
+            data = json.load(file_data)
+    except FileNotFoundError:
+        messagebox.showwarning(title="Error", message="No data file found.")
+    else:
+        if website in data:
+            messagebox.showinfo(title=website, message=f"Email: {data[website]["email"]}\n"
+                                                       f"Password: {data[website]["password"]}")
+        else:
+            messagebox.showwarning(title="Error", message=f"Website {website} not found in storage.")
 
 
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
@@ -70,18 +88,18 @@ def save_information():
         if is_answer_ok:
             # Dump the new data into local json file
             try:
-                with open("data.json", "r") as data_file:
+                with open(OUTPUT_FILE, "r") as data_file:
                     # Reading old data
                     data = json.load(data_file)
             except FileNotFoundError:
-                with open("data.json", "w") as data_file:
+                with open(OUTPUT_FILE, "w") as data_file:
                     # Creates and write new data
                     json.dump(new_data, data_file)
             else:
                 # Updating old data with new data
                 data.update(new_data)
 
-                with open("data.json", "w") as data_file:
+                with open(OUTPUT_FILE, "w") as data_file:
                     # Saving updated data
                     json.dump(data, data_file, indent=4)
             finally:
@@ -114,8 +132,8 @@ empty_label = Label(bg="white", fg="white")
 empty_label.grid(column=0, row=4, columnspan=4)
 
 # Entries
-website_entry = Entry(width=52, highlightthickness=1, border=1, font=FONT)
-website_entry.grid(column=1, row=1, columnspan=2)
+website_entry = Entry(width=32, highlightthickness=1, border=1, font=FONT)
+website_entry.grid(column=1, row=1)
 username_entry = Entry(width=52, highlightthickness=1, border=1, font=FONT)
 username_entry.insert(0, "@gmail.com")
 username_entry.grid(column=1, row=2, columnspan=2)
@@ -129,6 +147,9 @@ gen_pass_button.grid(column=2, row=3)
 add_button = Button(text="Add", width=45, font=FONT, bg=LIGHT_YELLOW, highlightthickness=0,
                     border=1, fg=RED, command=save_information)
 add_button.grid(column=1, row=5, columnspan=2)
+search_button = Button(text="Search", width=16, font=FONT, bg=LIGHT_YELLOW, highlightthickness=0,
+                       border=1, fg=RED, command=search_website_data)
+search_button.grid(column=2, row=1)
 
 default_interface()
 
