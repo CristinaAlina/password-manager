@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 from random import randint, shuffle, choice
 import pyperclip
+import json
 
 FONT = ("Calibre", 8, "bold")
 RED = "#7D0A0A"
@@ -52,7 +53,12 @@ def save_information():
     website_text = website_entry.get()
     username_text = username_entry.get()
     password_text = password_entry.get()
-
+    new_data = {
+        website_text: {
+            "email": username_text,
+            "password": password_text
+        }
+    }
     if not bool(website_text) or not bool(username_text) or not bool(password_text):
         messagebox.showwarning("Oops...", "Please don't leave any fields empty!")
     else:
@@ -62,10 +68,24 @@ def save_information():
                                                                           f"Is it ok to save?")
 
         if is_answer_ok:
-            # Append the data into a local file
-            with open("data.txt", "a") as data_file:
-                data_file.write(f"{website_text} | {username_text} | {password_text}\n")
-            default_interface()
+            # Dump the new data into local json file
+            try:
+                with open("data.json", "r") as data_file:
+                    # Reading old data
+                    data = json.load(data_file)
+            except FileNotFoundError:
+                with open("data.json", "w") as data_file:
+                    # Creates and write new data
+                    json.dump(new_data, data_file)
+            else:
+                # Updating old data with new data
+                data.update(new_data)
+
+                with open("data.json", "w") as data_file:
+                    # Saving updated data
+                    json.dump(data, data_file, indent=4)
+            finally:
+                default_interface()
 
 
 # ---------------------------- UI SETUP ----------------------
