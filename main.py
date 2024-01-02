@@ -1,5 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
+from random import randint, shuffle, choice
+import pyperclip
 
 FONT = ("Calibre", 8, "bold")
 RED = "#7D0A0A"
@@ -7,6 +9,31 @@ LIGHT_YELLOW = "#F3EDC8"
 
 
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
+def password_generator():
+    """Generates a random complex password with 8 to 10 letters, 2 to 4 symbols and 2 to 4 numbers. Fills the password
+    entry automatically and copy it to clipboard."""
+    letters = [
+        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+        'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D',
+        'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
+        'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
+    ]
+    numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+    symbols = ['!', '#', '$', '%', '&', '(', ')', '*', '+']
+
+    generated_pass = []
+    generated_pass += [choice(letters) for _ in range(randint(8, 10))]
+    generated_pass += [choice(symbols) for _ in range(randint(2, 4))]
+    generated_pass += [choice(numbers) for _ in range(randint(2, 4))]
+
+    shuffle(generated_pass)
+    new_password = "".join(generated_pass)
+
+    # Clear and populate password entry field with generated password
+    password_entry.delete(0, END)
+    password_entry.insert(0, new_password)
+    # Copy the new password to clipboard
+    pyperclip.copy(new_password)
 
 
 # ---------------------------- SAVE PASSWORD ------------------------------- #
@@ -77,7 +104,7 @@ password_entry.grid(column=1, row=3)
 
 # Buttons
 gen_pass_button = Button(text="Generate Password", width=16, font=FONT, bg=LIGHT_YELLOW, highlightthickness=0,
-                         border=1, fg=RED)
+                         border=1, fg=RED, command=password_generator)
 gen_pass_button.grid(column=2, row=3)
 add_button = Button(text="Add", width=45, font=FONT, bg=LIGHT_YELLOW, highlightthickness=0,
                     border=1, fg=RED, command=save_information)
